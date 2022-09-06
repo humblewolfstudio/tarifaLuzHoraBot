@@ -9,12 +9,20 @@ var client = new Twitter({
 	access_token_secret: process.env.ACCESS_TOKEN_SECRET
 });
 
+
 axios.get("https://api.preciodelaluz.org/v1/prices/all?zone=PCB").then(response => {
     var franges = response.data;
     var bestFranges = getBestFranges(franges);
     getCheapestFranja(franges);
     getExpensiestFranja(franges);
     returnBestFranja(bestFranges, franges);
+    client.post('statuses/update', {status: 'I am a tweet'}, function(error, tweet, response) {
+        if (!error) {
+            
+        } else{
+            console.log(error);
+        }
+      });
 }).catch(error => {
     console.log(error);
 });
@@ -85,3 +93,5 @@ function calcularPrecioMedio(precios) {
     }
     return (resultado / precios.length);
 }
+
+//(TODO) hacer que suba un tweet cuando vaya a empezar la franja alta y otro cuando la franja baja
