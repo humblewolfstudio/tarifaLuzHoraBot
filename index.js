@@ -1,4 +1,13 @@
 const axios = require("axios");
+require('dotenv').config();
+var Twitter = require('twitter');
+
+var client = new Twitter({
+	consumer_key: process.env.CONSUMER_KEY,
+	consumer_secret: process.env.CONSUMER_SECRET,
+	access_token_key: process.env.ACCESS_TOKEN_KEY,
+	access_token_secret: process.env.ACCESS_TOKEN_SECRET
+});
 
 axios.get("https://api.preciodelaluz.org/v1/prices/all?zone=PCB").then(response => {
     var franges = response.data;
