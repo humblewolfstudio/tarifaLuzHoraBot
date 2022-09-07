@@ -9,6 +9,19 @@ var client = new Twitter({
     access_token_key: process.env.ACCESS_TOKEN_KEY,
     access_token_secret: process.env.ACCESS_TOKEN_SECRET
 });
+//hacemos una tirada cuando reseteamos el bot
+axios.get("https://api.preciodelaluz.org/v1/prices/all?zone=PCB").then(response => {
+        var franges = response.data;
+        var franjaActual = searchNow(franges);
+        var bestFranges = getBestFranges(franges);
+        var cheapestFranja = getCheapestFranja(franges);
+        var expensiestFranja = getExpensiestFranja(franges);
+        var bestFranja = returnBestFranja(bestFranges, franges);
+        var tweet =franjaActual + "\n" + bestFranja + "\n" + cheapestFranja + "\n" + expensiestFranja;
+        postTweet(tweet);
+    }).catch(error => {
+        console.log(error);
+    });
 
 //cada 4 horas: 0 */4 * * *
 //cada hora: 0 * * * *
