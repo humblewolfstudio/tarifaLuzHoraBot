@@ -16,6 +16,8 @@ axios.get("https://api.preciodelaluz.org/v1/prices/all?zone=PCB").then(response 
     var cheapestFranja = getCheapestFranja(franges);
     var expensiestFranja = getExpensiestFranja(franges);
     var bestFranja = returnBestFranja(bestFranges, franges);
+    var tweet = bestFranja + "\n" + cheapestFranja + "\n" + expensiestFranja;
+    postTweet(tweet);
 }).catch(error => {
     console.log(error);
 });
@@ -44,7 +46,7 @@ function getCheapestFranja(franges) {
         }
     }
     cheapestFranja = cheapestFranja.split("-");
-    var cheapestFranjaMaco = cheapestFranja[0] + "h - " + cheapestFranja[1] + "h";
+    var cheapestFranjaMaco = cheapestFranja[0] + "h-" + cheapestFranja[1] + "h";
     return "Mejor franja de precio: " + cheapestFranjaMaco + " a " + (cheapestPrice / 1000).toFixed(4) + "€/kWh";
 }
 
@@ -58,7 +60,7 @@ function getExpensiestFranja(franges) {
         }
     }
     expensiestFranja = expensiestFranja.split("-");
-    var expensiestFranjaMaco = expensiestFranja[0] + "h - " + expensiestFranja[1] + "h";
+    var expensiestFranjaMaco = expensiestFranja[0] + "h-" + expensiestFranja[1] + "h";
     return "Peor franja de precio: " + expensiestFranjaMaco + " a " + (expensiestPrice / 1000).toFixed(4) + "€/kWh";
 }
 
@@ -74,7 +76,7 @@ function returnBestFranja(bestFranges, franges) {
     }
     var inicio = bestFranges[0].split("-");
     var final = bestFranges[bestFranges.length - 1].split("-")
-    bestFranja = inicio[0] + "h - " + final[1] + "h"
+    bestFranja = inicio[0] + "h-" + final[1] + "h"
     var precioMedio = calcularPrecioMedio(prices);
     return "Horas del dia con mejor precio: " + bestFranja + " con una media de " + (precioMedio / 1000).toFixed(4) + "€/kWh";
 }
@@ -90,9 +92,9 @@ function calcularPrecioMedio(precios) {
 function postTweet(tweet) {
     client.post('statuses/update', { status: tweet }, function (error, tweet, response) {
         if (!error) {
-
+            console.log("Tweet posted correctly");
         } else {
-            console.log(error);
+            console.error(error);
         }
     });
 }
