@@ -1,6 +1,7 @@
 const axios = require("axios");
 require('dotenv').config();
 var Twitter = require('twitter');
+var cron = require('node-cron');
 
 var client = new Twitter({
     consumer_key: process.env.CONSUMER_KEY,
@@ -9,17 +10,21 @@ var client = new Twitter({
     access_token_secret: process.env.ACCESS_TOKEN_SECRET
 });
 
-
-axios.get("https://api.preciodelaluz.org/v1/prices/all?zone=PCB").then(response => {
-    var franges = response.data;
-    var bestFranges = getBestFranges(franges);
-    var cheapestFranja = getCheapestFranja(franges);
-    var expensiestFranja = getExpensiestFranja(franges);
-    var bestFranja = returnBestFranja(bestFranges, franges);
-    var tweet = bestFranja + "\n" + cheapestFranja + "\n" + expensiestFranja;
-    postTweet(tweet);
-}).catch(error => {
-    console.log(error);
+//cada 4 horas: 0 */4 * * *
+//cada hora: 0 * * * *
+cron.schedule('0 * * * *', () => {
+    axios.get("https://api.preciodelaluz.org/v1/prices/all?zone=PCB").then(response => {
+        var franges = response.data;
+        var franjaActual = searchNow(franges);
+        var bestFranges = getBestFranges(franges);
+        var cheapestFranja = getCheapestFranja(franges);
+        var expensiestFranja = getExpensiestFranja(franges);
+        var bestFranja = returnBestFranja(bestFranges, franges);
+        var tweet =franjaActual + "\n" + bestFranja + "\n" + cheapestFranja + "\n" + expensiestFranja;
+        postTweet(tweet);
+    }).catch(error => {
+        console.log(error);
+    });
 });
 
 function getBestFranges(franges) {
@@ -87,6 +92,18 @@ function calcularPrecioMedio(precios) {
         resultado += precios[precio];
     }
     return (resultado / precios.length);
+}
+
+function searchNow(franges){
+    var date = new Date();
+    var nowFranja = date.getHours();
+    var aux;
+    for(franja in franges){
+        aux = franja.split('-');
+        if(nowFranja == aux[0]){
+            return `Franja actual (${franja}): ` + franges[franja].price / 1000 + "€/kWh";
+        }
+    }
 }
 
 function postTweet(tweet) {
