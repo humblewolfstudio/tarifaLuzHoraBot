@@ -114,7 +114,7 @@ function searchNow(franges){
     for(franja in franges){
         aux = franja.split('-');
         if(nowFranja == aux[0]){
-            return `Franja actual (${franja}): ` + franges[franja].price / 1000 + "€/kWh";
+            return `Franja actual (${franja}): ` + (franges[franja].price / 1000).toFixed(4) + "€/kWh";
         }
     }
 }
