@@ -110,6 +110,9 @@ function calcularPrecioMedio(precios) {
 function searchNow(franges){
     var date = new Date();
     var nowFranja = Number(date.getHours()) + 2;
+    if(nowFranja >= 24){
+        nowFranja -= 24;
+    }
     var aux;
     for(franja in franges){
         aux = franja.split('-');
